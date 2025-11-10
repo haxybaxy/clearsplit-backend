@@ -11,6 +11,15 @@ export class DBTransaction extends DatabaseEntity {
   @Column({ nullable: true })
   description: string;
 
+  @Column({ nullable: true })
+  category: string;
+
+  @Column({
+    type: 'enum',
+    enum: TransactionType,
+    nullable: false,
+    default: TransactionType.Income,
+  })
   @Column({ nullable: false })
   finalAmount: number;
 
@@ -35,17 +44,8 @@ export class DBTransaction extends DatabaseEntity {
   originalCurrency: DBCurrency;
 
   @Column({ nullable: false, default: 0 })
-  exchangeRate: number
+  exchangeRate: number;
 
-  @Column({ nullable: true })
-  category: string;
-
-  @Column({
-    type: 'enum',
-    enum: TransactionType,
-    nullable: false,
-    default: TransactionType.Income,
-  })
   @Column({ nullable: false })
   propertyId: string;
 
