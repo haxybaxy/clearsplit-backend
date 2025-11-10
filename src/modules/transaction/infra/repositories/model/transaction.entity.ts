@@ -3,6 +3,7 @@ import { Column, Entity, ManyToOne, JoinColumn } from 'typeorm';
 import { DBProperty } from '@modules/property/infra/repositories/model/property.entity';
 import { TransactionType } from '@modules/transaction/domain/transaction-type.value-object';
 import { DBCurrency } from '@modules/currency/infra/repositories/model/invoice-form.entity';
+import { DBContact } from '@modules/contact/infra/repositories/model/contact.entity';
 
 export const TRANSACTION_TABLE_NAME = 'transaction';
 
@@ -52,4 +53,11 @@ export class DBTransaction extends DatabaseEntity {
   @ManyToOne(() => DBProperty, (property) => property.transactions)
   @JoinColumn({ name: 'propertyId', referencedColumnName: 'id' })
   property: DBProperty;
+
+  @Column({ nullable: true })
+  contactId: number;
+
+  @ManyToOne(() => DBContact, (contact) => contact.transactions)
+  @JoinColumn({ name: 'contactId', referencedColumnName: 'id' })
+  contact: DBContact;
 }

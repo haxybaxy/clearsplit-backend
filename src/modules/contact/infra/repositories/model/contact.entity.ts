@@ -1,6 +1,7 @@
 import { DatabaseEntity } from '@base/infra/repositories/entities/typeorm/database.entity';
-import { Column, Entity, OneToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, OneToOne, OneToMany, JoinColumn } from 'typeorm';
 import { DBUser } from '@modules/user/infra/repositories/model/user.entity';
+import { DBTransaction } from '@modules/transaction/infra/repositories/model/transaction.entity';
 
 @Entity()
 export class DBContact extends DatabaseEntity {
@@ -19,4 +20,7 @@ export class DBContact extends DatabaseEntity {
   @OneToOne(() => DBUser, (user) => user.contact, { nullable: true })
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: DBUser;
+
+  @OneToMany(() => DBTransaction, (transaction) => transaction.contact)
+  transactions: DBTransaction[];
 }
