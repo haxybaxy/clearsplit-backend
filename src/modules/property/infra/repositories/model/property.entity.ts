@@ -1,8 +1,11 @@
 import { DatabaseEntity } from '@base/infra/repositories/entities/typeorm/database.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { DBTeam } from '@modules/team/infra/repositories/model/team.entity';
+import { DBTransaction } from '@modules/transaction/infra/repositories/model/transaction.entity';
 
-@Entity()
+export const PROPERTY_TABLE_NAME = 'property';
+
+@Entity(PROPERTY_TABLE_NAME)
 export class DBProperty extends DatabaseEntity {
   @Column({ nullable: false })
   name: string;
@@ -16,7 +19,10 @@ export class DBProperty extends DatabaseEntity {
   @Column({ nullable: false })
   teamId: string;
 
-  @ManyToOne(() => DBTeam, { nullable: false })
+  @ManyToOne(() => DBTeam, (team) => team.properties, { nullable: false })
   @JoinColumn({ name: 'teamId', referencedColumnName: 'id' })
   team: DBTeam;
+
+  @OneToMany(() => DBTransaction, (transaction) => transaction.property)
+  transactions: DBTransaction[];
 }
