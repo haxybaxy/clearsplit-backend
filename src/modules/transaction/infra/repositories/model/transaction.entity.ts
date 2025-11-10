@@ -2,6 +2,7 @@ import { DatabaseEntity } from '@base/infra/repositories/entities/typeorm/databa
 import { Column, Entity, ManyToOne, JoinColumn } from 'typeorm';
 import { DBProperty } from '@modules/property/infra/repositories/model/property.entity';
 import { TransactionType } from '@modules/transaction/domain/transaction-type.value-object';
+import { DBCurrency } from '@modules/currency/infra/repositories/model/invoice-form.entity';
 
 export const TRANSACTION_TABLE_NAME = 'transaction';
 
@@ -11,7 +12,27 @@ export class DBTransaction extends DatabaseEntity {
   description: string;
 
   @Column({ nullable: false })
-  amount: number;
+  finalAmount: number;
+
+  @Column({ nullable: false })
+  originalAmount: number;
+
+  @Column({ nullable: false })
+  finalCurrencyId: string;
+
+  @ManyToOne(() => DBCurrency, (currency) => currency.finalCurrencyTransactions)
+  @JoinColumn({ name: 'finalCurrencyId', referencedColumnName: 'id' })
+  finalCurrency: DBCurrency;
+
+  @Column({ nullable: false })
+  originalCurrencyId: string;
+
+  @ManyToOne(
+    () => DBCurrency,
+    (currency) => currency.originalCurrencyTransactions,
+  )
+  @JoinColumn({ name: 'originalCurrencyId', referencedColumnName: 'id' })
+  originalCurrency: DBCurrency;
 
   @Column({ nullable: true })
   category: string;
