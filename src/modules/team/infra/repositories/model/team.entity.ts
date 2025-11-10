@@ -11,12 +11,12 @@ export class DBTeam extends DatabaseEntity {
   @Column({ nullable: false })
   name: string;
 
-  @Column({ nullable: false })
-  ownerId: string;
-
-  @OneToOne(() => DBUser, { nullable: false, onDelete: 'CASCADE' })
+  @OneToOne(() => DBUser, (user) => user.owner, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'ownerId', referencedColumnName: 'id' })
-  owner: DBUser;
+  user: DBUser;
 
   @Column({ nullable: false })
   defaultCurrency: string;
