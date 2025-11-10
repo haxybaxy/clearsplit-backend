@@ -1,6 +1,16 @@
-import { DatabaseEntity } from "@Base/infra/repositories/entities/typeorm/database.entity";
-import { Column, Entity } from 'typeorm';
+import { DatabaseEntity } from '@base/infra/repositories/entities/typeorm/database.entity';
+import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { DBUser } from '@modules/user/infra/repositories/model/user.entity';
 
 @Entity()
-class Team{
+export class DBTeam extends DatabaseEntity {
+  @Column({ nullable: false })
+  name: string;
+
+  @OneToOne(() => DBUser)
+  @JoinColumn()
+  ownerId: string;
+
+  @Column({ nullable: false })
+  defaultCurrency: string;
 }

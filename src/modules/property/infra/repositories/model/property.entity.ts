@@ -1,6 +1,14 @@
-import { DatabaseEntity } from "@Base/infra/repositories/entities/typeorm/database.entity";
+import { DatabaseEntity } from '@base/infra/repositories/entities/typeorm/database.entity';
 import { Column, Entity } from 'typeorm';
 
 @Entity()
-class Transaction{
+export class DBProperty extends DatabaseEntity {
+  @Column({ nullable: false })
+  name: string;
+
+  @Column({ nullable: false })
+  alias: string;
+
+  @Column({ nullable: false })
+  address: string;
 }

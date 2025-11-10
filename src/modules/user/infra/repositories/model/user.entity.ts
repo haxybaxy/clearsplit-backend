@@ -2,13 +2,16 @@ import { DatabaseEntity } from '@base/infra/repositories/entities/typeorm/databa
 import { Column, Entity } from 'typeorm';
 
 @Entity()
-export class DBTransaction extends DatabaseEntity {
+export class DBUser extends DatabaseEntity {
   @Column({ nullable: false })
-  name: string;
+  firstName: string;
 
   @Column({ nullable: false })
-  alias: string;
+  lastName: string;
 
   @Column({ nullable: false })
-  address: string;
+  email: string;
+
+  @Column({ nullable: true })
+  avatarUrl: string;
 }
