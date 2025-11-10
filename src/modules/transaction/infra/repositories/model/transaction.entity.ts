@@ -34,6 +34,9 @@ export class DBTransaction extends DatabaseEntity {
   @JoinColumn({ name: 'originalCurrencyId', referencedColumnName: 'id' })
   originalCurrency: DBCurrency;
 
+  @Column({ nullable: false, default: 0 })
+  exchangeRate: number
+
   @Column({ nullable: true })
   category: string;
 
