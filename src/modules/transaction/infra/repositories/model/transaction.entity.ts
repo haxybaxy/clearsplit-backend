@@ -2,4 +2,8 @@ import { DatabaseEntity } from '@base/infra/repositories/entities/typeorm/databa
 import { Column, Entity } from 'typeorm';
 
 @Entity()
-class Transaction extends DatabaseEntity {}
+class Transaction extends DatabaseEntity {
+
+  @Column
+
+}
