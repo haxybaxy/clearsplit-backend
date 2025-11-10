@@ -1,5 +1,6 @@
 import { DatabaseEntity } from '@base/infra/repositories/entities/typeorm/database.entity';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { DBTeam } from '@modules/team/infra/repositories/model/team.entity';
 
 @Entity()
 export class DBProperty extends DatabaseEntity {
@@ -11,4 +12,11 @@ export class DBProperty extends DatabaseEntity {
 
   @Column({ nullable: false })
   address: string;
+
+  @Column({ nullable: false })
+  teamId: string;
+
+  @ManyToOne(() => DBTeam, { nullable: false })
+  @JoinColumn({ name: 'teamId', referencedColumnName: 'id' })
+  team: DBTeam;
 }
