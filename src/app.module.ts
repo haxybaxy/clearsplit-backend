@@ -10,7 +10,15 @@ import { DataImportModule } from './modules/data-import/data-import.module';
 import { ContactModule } from './modules/contact/contact.module';
 
 @Module({
-  imports: [TransactionModule, TeamModule, ReportModule, PropertyModule, InvoiceFormModule, DataImportModule, ContactModule],
+  imports: [
+    TransactionModule,
+    TeamModule,
+    ReportModule,
+    PropertyModule,
+    InvoiceFormModule,
+    DataImportModule,
+    ContactModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
