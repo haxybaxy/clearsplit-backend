@@ -30,6 +30,7 @@
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "typeorm": "^0.3.27",
+    "typeorm-extension": "^3.7.1",
     "zod": "^4.1.12"
   },
   "devDependencies": {
@@ -42,7 +43,7 @@
     "@swc/core": "^1.10.8",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.10.7",
+    "@types/node": "^22.19.1",
     "@types/supertest": "^6.0.2",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
