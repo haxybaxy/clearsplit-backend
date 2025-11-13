@@ -10,6 +10,7 @@ import { DataImportModule } from './modules/data-import/data-import.module';
 import { ContactModule } from './modules/contact/contact.module';
 import { ConfigModule } from '@nestjs/config';
 import { z } from 'zod';
+import { DatabaseModule } from './modules/database/database.module';
 
 const envSchema = z.object({
   POSTGRES_HOST: z.string().min(1),
@@ -42,6 +43,7 @@ const envSchema = z.object({
         return result.data;
       },
     }),
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],
