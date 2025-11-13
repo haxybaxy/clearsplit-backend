@@ -14,11 +14,14 @@ export class DBUser extends DatabaseEntity {
   @Column({ nullable: false })
   lastName: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, unique: true })
   email: string;
 
   @Column({ nullable: true })
   avatarUrl: string;
+
+  @Column({ nullable: true, unique: true })
+  supabaseId: string;
 
   @OneToMany(() => DBTeamMember, (teamMembership) => teamMembership.user)
   @JoinColumn({ name: 'id', referencedColumnName: 'userId' })
