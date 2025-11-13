@@ -16,7 +16,7 @@ export interface JwtPayload {
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly authService: AuthService) {
-    const jwtSecret = envConfig.get('SUPABASE_JWT_SECRET');
+    const jwtSecret: string = envConfig.get('SUPABASE_JWT_SECRET');
 
     if (!jwtSecret) {
       throw new Error(
