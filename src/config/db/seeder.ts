@@ -7,4 +7,7 @@ async function seed() {
   await connectionSource.destroy();
 }
 
-seed();
+seed().catch((error) => {
+  console.error('Seeding failed:', error);
+  process.exit(1);
+});
