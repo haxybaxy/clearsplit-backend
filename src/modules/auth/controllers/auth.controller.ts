@@ -9,10 +9,16 @@ import {
   HttpStatus,
   BadRequestException,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { SignupDto, SignupDtoSchema } from './dto/signup.dto';
-import { LoginDto, LoginDtoSchema } from './dto/login.dto';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { AuthService } from '@modules/auth/application/auth.service';
+import {
+  SignupDto,
+  SignupDtoSchema,
+} from '@modules/auth/application/dto/signup.dto';
+import {
+  LoginDto,
+  LoginDtoSchema,
+} from '@modules/auth/application/dto/login.dto';
+import { JwtAuthGuard } from '@modules/auth/infra/api/guard/jwt-auth.guard';
 import { ZodError } from 'zod';
 
 @Controller('auth')
@@ -22,7 +28,7 @@ export class AuthController {
   @Post('signup')
   async signup(@Body() body: unknown) {
     try {
-      const signupDto = SignupDtoSchema.parse(body);
+      const signupDto: SignupDto = SignupDtoSchema.parse(body);
       return await this.authService.signup(signupDto);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -42,7 +48,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async login(@Body() body: unknown) {
     try {
-      const loginDto = LoginDtoSchema.parse(body);
+      const loginDto: LoginDto = LoginDtoSchema.parse(body);
       return await this.authService.login(loginDto);
     } catch (error) {
       if (error instanceof ZodError) {

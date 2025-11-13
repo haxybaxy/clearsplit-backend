@@ -4,7 +4,8 @@ import {
   ConflictException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { UserService } from '@modules/user/user.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
@@ -16,8 +17,8 @@ export class AuthService {
   private supabase: SupabaseClient;
 
   constructor(private readonly userService: UserService) {
-    const supabaseUrl = envConfig.get('SUPABASE_URL');
-    const supabaseKey = envConfig.get('SUPABASE_ANON_KEY');
+    const supabaseUrl: string = envConfig.get('SUPABASE_URL');
+    const supabaseKey: string = envConfig.get('SUPABASE_ANON_KEY');
 
     if (!supabaseUrl || !supabaseKey) {
       throw new Error(
@@ -25,6 +26,7 @@ export class AuthService {
       );
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     this.supabase = createClient(supabaseUrl, supabaseKey);
   }
 
