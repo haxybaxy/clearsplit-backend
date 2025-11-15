@@ -79,8 +79,7 @@ export class AuthService {
         },
       };
     } catch (error) {
-      // If database sync fails, we should ideally clean up the Supabase user
-      // For now, we'll throw an error
+      console.log(error);
       throw new InternalServerErrorException(
         'Failed to sync user to database after Supabase signup',
       );
