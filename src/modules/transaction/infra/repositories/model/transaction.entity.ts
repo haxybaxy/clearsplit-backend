@@ -1,9 +1,10 @@
 import { DatabaseEntity } from '@base/infra/repositories/entities/typeorm/database.entity';
-import { Column, Entity, ManyToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { DBProperty } from '@modules/property/infra/repositories/model/property.entity';
 import { TransactionType } from '@modules/transaction/domain/transaction-type.value-object';
 import { DBCurrency } from '@modules/currency/infra/repositories/model/invoice-form.entity';
 import { DBContact } from '@modules/contact/infra/repositories/model/contact.entity';
+import { DBTransactionComponent } from './transaction-component.entity';
 
 export const TRANSACTION_TABLE_NAME = 'transaction';
 
@@ -43,6 +44,12 @@ export class DBTransaction extends DatabaseEntity {
   )
   @JoinColumn({ name: 'originalCurrencyId', referencedColumnName: 'id' })
   originalCurrency: DBCurrency;
+
+  @OneToMany(
+    () => DBTransactionComponent,
+    (transactionComponent) => transactionComponent.transaction,
+  )
+  components: DBTransactionComponent[];
 
   @Column({ nullable: false, default: 0 })
   exchangeRate: number;
