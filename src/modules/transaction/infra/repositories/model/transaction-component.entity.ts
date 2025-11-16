@@ -1,5 +1,5 @@
 import { DatabaseEntity } from '@base/infra/repositories/entities/typeorm/database.entity';
-import { Column, Entity, ManyToOne, JoinColumn, Transaction } from 'typeorm';
+import { Column, Entity, ManyToOne, JoinColumn } from 'typeorm';
 import { TransactionComponentCategory } from '@modules/transaction/domain/transaction-component-category.value-object';
 import { DBCurrency } from '@modules/currency/infra/repositories/model/invoice-form.entity';
 import { DBTransaction } from './transaction.entity';
