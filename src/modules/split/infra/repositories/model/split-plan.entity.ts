@@ -12,7 +12,7 @@ export class DBSplitPlan extends DatabaseEntity {
   isActive: boolean;
 
   @Column({ nullable: true })
-  expirationDate: Date;
+  expirationDate?: Date;
 
   @Column({ nullable: false })
   propertyId: string;
