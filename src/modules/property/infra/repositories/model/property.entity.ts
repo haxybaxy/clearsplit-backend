@@ -2,6 +2,7 @@ import { DatabaseEntity } from '@base/infra/repositories/entities/typeorm/databa
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { DBTeam } from '@modules/team/infra/repositories/model/team.entity';
 import { DBTransaction } from '@modules/transaction/infra/repositories/model/transaction.entity';
+import { DBSplitPlan } from '@modules/split/infra/repositories/model/split-plan.entity';
 
 export const PROPERTY_TABLE_NAME = 'property';
 
@@ -25,4 +26,7 @@ export class DBProperty extends DatabaseEntity {
 
   @OneToMany(() => DBTransaction, (transaction) => transaction.property)
   transactions: DBTransaction[];
+
+  @OneToMany(() => DBSplitPlan, (splitPlan) => splitPlan.property)
+  splitPlans: DBSplitPlan[];
 }
