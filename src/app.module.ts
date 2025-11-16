@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from './modules/database/database.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { UserModule } from './modules/user/user.module';
 import { TransactionModule } from './modules/transaction/transaction.module';
 import { TeamModule } from './modules/team/team.module';
 import { ReportModule } from './modules/report/report.module';
@@ -13,6 +15,8 @@ import { ContactModule } from './modules/contact/contact.module';
 @Module({
   imports: [
     DatabaseModule,
+    AuthModule,
+    UserModule,
     TransactionModule,
     TeamModule,
     ReportModule,

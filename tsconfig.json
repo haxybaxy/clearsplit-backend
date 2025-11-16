@@ -10,6 +10,9 @@
       ],
       "@src/*": [
         "src/*"
+      ],
+      "@config/*": [
+        "src/config/*"
       ]
     },
     "module": "nodenext",
