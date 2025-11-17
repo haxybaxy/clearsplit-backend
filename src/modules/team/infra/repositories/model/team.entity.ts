@@ -1,8 +1,16 @@
 import { DatabaseEntity } from '@base/infra/repositories/entities/typeorm/database.entity';
-import { Column, Entity, JoinColumn, OneToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  OneToMany,
+  ManyToOne,
+} from 'typeorm';
 import { DBUser } from '@modules/user/infra/repositories/model/user.entity';
 import { DBProperty } from '@modules/property/infra/repositories/model/property.entity';
 import { DBTeamMember } from './team-member.entity';
+import { DBCurrency } from '@modules/currency/infra/repositories/model/currency.entity';
 
 export const TEAM_TABLE_NAME = 'team';
 
@@ -10,6 +18,9 @@ export const TEAM_TABLE_NAME = 'team';
 export class DBTeam extends DatabaseEntity {
   @Column({ nullable: false })
   name: string;
+
+  @Column({ nullable: false })
+  ownerId: string;
 
   @OneToOne(() => DBUser, (user) => user.owner, {
     nullable: false,
@@ -19,7 +30,11 @@ export class DBTeam extends DatabaseEntity {
   user: DBUser;
 
   @Column({ nullable: false })
-  defaultCurrency: string;
+  defaultCurrencyId: string;
+
+  @ManyToOne(() => DBCurrency, (currency) => currency.teams)
+  @JoinColumn({ name: 'defaultCurrencyId', referencedColumnName: 'id' })
+  currency: DBCurrency;
 
   @OneToMany(() => DBProperty, (property) => property.team)
   properties: DBProperty[];
