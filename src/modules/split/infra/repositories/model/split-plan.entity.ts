@@ -1,7 +1,7 @@
 import { DatabaseEntity } from '@base/infra/repositories/entities/typeorm/database.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { DBProperty } from '@modules/property/infra/repositories/model/property.entity';
-import { DBSplitRule } from './split-layer.entity';
+import { DBSplitRule } from './split-rule.entity';
 
 export const SPLIT_PLAN_TABLE_NAME = 'split_plan';
 @Entity(SPLIT_PLAN_TABLE_NAME)

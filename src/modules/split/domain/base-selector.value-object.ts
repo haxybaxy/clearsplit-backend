@@ -1,34 +1,85 @@
+export enum BaseSource {
+  IncomeComponents = 'income_components',
+  ExpenseComponents = 'expense_components',
+  BothComponents = 'both_components',
+  Profit = 'profit',
+  Remaining = 'remaining',
+}
+
 export class BaseSelector {
   private constructor(
-    readonly mode: 'categories' | 'profit' | 'remaining',
+    readonly source: BaseSource,
     readonly includeCategoryIds?: string[],
     readonly excludeCategoryIds?: string[],
-    readonly includeIncome: boolean = true,
-    readonly includeExpenses: boolean = true,
   ) {}
 
   static create(props: {
-    mode: 'categories' | 'profit' | 'remaining';
+    source: BaseSource;
     includeCategoryIds?: string[];
     excludeCategoryIds?: string[];
-    includeIncome?: boolean;
-    includeExpenses?: boolean;
   }) {
-    // Domain invariants
+    // --- Domain invariants ---
+
+    const isCategoryBased =
+      props.source === BaseSource.IncomeComponents ||
+      props.source === BaseSource.ExpenseComponents ||
+      props.source === BaseSource.BothComponents;
+
+    const isProfitOrRemaining =
+      props.source === BaseSource.Profit ||
+      props.source === BaseSource.Remaining;
+
+    // 1️⃣ Profit or Remaining cannot have categories
     if (
-      props.mode === 'categories' &&
-      !props.includeCategoryIds?.length &&
-      !props.excludeCategoryIds?.length
+      isProfitOrRemaining &&
+      (props.includeCategoryIds?.length || props.excludeCategoryIds?.length)
     ) {
-      throw new Error('Category mode requires include/exclude categories.');
+      throw new Error(
+        'Profit or Remaining sources cannot include category filters.',
+      );
+    }
+
+    // 2️⃣ Category-based source: empty arrays = all categories (valid)
+    if (isCategoryBased) {
+      // undefined / empty is interpreted as “all categories of that type”
+      props.includeCategoryIds = props.includeCategoryIds?.length
+        ? props.includeCategoryIds
+        : undefined;
+      props.excludeCategoryIds = props.excludeCategoryIds?.length
+        ? props.excludeCategoryIds
+        : undefined;
     }
 
     return new BaseSelector(
-      props.mode,
+      props.source,
       props.includeCategoryIds,
       props.excludeCategoryIds,
-      props.includeIncome ?? true,
-      props.includeExpenses ?? true,
+    );
+  }
+
+  // --- Convenience getters ---
+  get isCategoryBased() {
+    return (
+      this.source === BaseSource.IncomeComponents ||
+      this.source === BaseSource.ExpenseComponents ||
+      this.source === BaseSource.BothComponents
+    );
+  }
+
+  get isProfitBased() {
+    return this.source === BaseSource.Profit;
+  }
+
+  get isRemainingBased() {
+    return this.source === BaseSource.Remaining;
+  }
+
+  // Helper to check if it should include all categories
+  get appliesToAllCategories() {
+    return (
+      this.isCategoryBased &&
+      !this.includeCategoryIds &&
+      !this.excludeCategoryIds
     );
   }
 }
