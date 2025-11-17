@@ -2,6 +2,7 @@ import { DatabaseEntity } from '@base/infra/repositories/entities/typeorm/databa
 import { Column, Entity, OneToOne, OneToMany, JoinColumn } from 'typeorm';
 import { DBUser } from '@modules/user/infra/repositories/model/user.entity';
 import { DBTransaction } from '@modules/transaction/infra/repositories/model/transaction.entity';
+import { DBStakeholder } from '@modules/split/infra/repositories/model/stakeholder.entity';
 
 @Entity()
 export class DBContact extends DatabaseEntity {
@@ -23,4 +24,7 @@ export class DBContact extends DatabaseEntity {
 
   @OneToMany(() => DBTransaction, (transaction) => transaction.contact)
   transactions: DBTransaction[];
+
+  @OneToMany(() => DBStakeholder, (stakeholder) => stakeholder.contact)
+  stakeholders: DBStakeholder[];
 }

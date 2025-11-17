@@ -18,8 +18,6 @@ export class BaseSelector {
     includeCategoryIds?: string[];
     excludeCategoryIds?: string[];
   }) {
-    // --- Domain invariants ---
-
     const isCategoryBased =
       props.source === BaseSource.IncomeComponents ||
       props.source === BaseSource.ExpenseComponents ||
@@ -29,7 +27,6 @@ export class BaseSelector {
       props.source === BaseSource.Profit ||
       props.source === BaseSource.Remaining;
 
-    // 1️⃣ Profit or Remaining cannot have categories
     if (
       isProfitOrRemaining &&
       (props.includeCategoryIds?.length || props.excludeCategoryIds?.length)
@@ -39,7 +36,6 @@ export class BaseSelector {
       );
     }
 
-    // 2️⃣ Category-based source: empty arrays = all categories (valid)
     if (isCategoryBased) {
       // undefined / empty is interpreted as “all categories of that type”
       props.includeCategoryIds = props.includeCategoryIds?.length
