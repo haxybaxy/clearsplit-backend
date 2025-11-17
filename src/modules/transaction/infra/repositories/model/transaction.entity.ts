@@ -2,7 +2,7 @@ import { DatabaseEntity } from '@base/infra/repositories/entities/typeorm/databa
 import { Column, Entity, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { DBProperty } from '@modules/property/infra/repositories/model/property.entity';
 import { TransactionType } from '@modules/transaction/domain/transaction-type.value-object';
-import { DBCurrency } from '@modules/currency/infra/repositories/model/invoice-form.entity';
+import { DBCurrency } from '@modules/currency/infra/repositories/model/currency.entity';
 import { DBContact } from '@modules/contact/infra/repositories/model/contact.entity';
 import { DBTransactionComponent } from './transaction-component.entity';
 

@@ -1,6 +1,8 @@
 import { DatabaseEntity } from '@base/infra/repositories/entities/typeorm/database.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
 import { DBTransaction } from '@modules/transaction/infra/repositories/model/transaction.entity';
+import { DBTransactionComponent } from '@modules/transaction/infra/repositories/model/transaction-component.entity';
+import { DBSplitLayer } from '@modules/split/infra/repositories/model/split-layer.entity';
 
 export const CURRENCY_TABLE_NAME = 'currency';
 
@@ -23,4 +25,22 @@ export class DBCurrency extends DatabaseEntity {
 
   @OneToMany(() => DBTransaction, (transaction) => transaction.finalCurrency)
   finalCurrencyTransactions: DBTransaction[];
+
+  @OneToMany(
+    () => DBTransactionComponent,
+    (transactionComponent) => transactionComponent.finalCurrency,
+  )
+  finalCurrencyTransactionComponents: DBTransactionComponent[];
+
+  @OneToMany(
+    () => DBTransactionComponent,
+    (transactionComponent) => transactionComponent.originalCurrency,
+  )
+  originalCurrencyTransactionComponents: DBTransactionComponent[];
+
+  @OneToMany(
+    () => DBTransactionComponent,
+    (transactionComponent) => transactionComponent.originalCurrency,
+  )
+  splitLayers: DBSplitLayer[];
 }
