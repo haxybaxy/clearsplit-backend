@@ -30,6 +30,6 @@ export class DBSplitLayer extends DatabaseEntity {
   currencyId?: string;
 
   @ManyToOne(() => DBCurrency, (currency) => currency.splitLayers)
-  @JoinColumn({ name: 'currency', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'currencyId', referencedColumnName: 'id' })
   currency: DBCurrency;
 }
