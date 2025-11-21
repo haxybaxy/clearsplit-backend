@@ -3,6 +3,7 @@ import { Column, Entity, OneToMany } from 'typeorm';
 import { DBTransaction } from '@modules/transaction/infra/repositories/model/transaction.entity';
 import { DBTransactionComponent } from '@modules/transaction/infra/repositories/model/transaction-component.entity';
 import { DBTeam } from '@modules/team/infra/repositories/model/team.entity';
+import { DBAllocation } from '@modules/split/infra/repositories/model/allocation.entity';
 
 export const CURRENCY_TABLE_NAME = 'currency';
 
@@ -40,4 +41,7 @@ export class DBCurrency extends DatabaseEntity {
 
   @OneToMany(() => DBTeam, (team) => team.currency)
   teams: DBTeam[];
+
+  @OneToMany(() => DBAllocation, (allocation) => allocation.currency)
+  allocations: DBAllocation[];
 }

@@ -3,6 +3,7 @@ import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { DBStakeholder } from './stakeholder.entity';
 import { DBSplitRule } from './split-rule.entity';
 import { AllocationType } from '@modules/split/domain/allocation-type.value-object';
+import { DBCurrency } from '@modules/currency/infra/repositories/model/currency.entity';
 
 export const ALLOCATION_TABLE_NAME = 'allocation';
 
@@ -31,4 +32,11 @@ export class DBAllocation extends DatabaseEntity {
 
   @Column({ type: 'jsonb' })
   value: number | string;
+
+  @Column({ nullable: true })
+  currencyId?: string;
+
+  @ManyToOne(() => DBCurrency, (currency) => currency.allocations)
+  @JoinColumn({ name: 'currencyId', referencedColumnName: 'id' })
+  currency?: DBCurrency;
 }
