@@ -140,6 +140,11 @@ export class CurrencyCodeAsPrimaryKey1763744400000
       `ALTER TABLE "transaction" ALTER COLUMN "originalCurrencyId" SET NOT NULL`,
     );
 
+    // Step 7.5: Alter code column to varchar(3) for ISO 4217 compliance
+    await queryRunner.query(
+      `ALTER TABLE "currency" ALTER COLUMN "code" TYPE character varying(3)`,
+    );
+
     // Step 8: Change currency primary key from id (uuid) to code (varchar)
     await queryRunner.query(
       `ALTER TABLE "currency" DROP CONSTRAINT "PK_3cda65c731a6264f0e444cc9b91"`,
