@@ -1,98 +1,183 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# ClearSplit Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+A NestJS backend application for managing expense splits, teams, transactions, and financial allocations. Built with TypeScript, TypeORM, and Supabase.
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This backend provides a RESTful API for the ClearSplit application, handling:
+- Expense splitting and allocation
+- Team and contact management
+- Transaction tracking
+- Financial reporting
+- User authentication with Supabase
 
-## Project setup
+## Prerequisites
 
-```bash
-$ npm install
-```
+- Node.js >= 20.0.0
+- npm >= 10.0.0
+- PostgreSQL database (via Supabase)
 
-## Compile and run the project
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
+## Project Setup
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm install
 ```
 
-## Deployment
+## Environment Configuration
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Create a `.env` file in the root directory with the following variables:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+```env
+# Database Configuration
+DATABASE_HOST=your-supabase-host
+DATABASE_PORT=5432
+DATABASE_USER=postgres
+DATABASE_PASSWORD=your-database-password
+DATABASE_NAME=postgres
+DATABASE_LOGGING_ENABLED=true
+NODE_ENV=development
+PORT=3000
+
+# Supabase Configuration
+SUPABASE_URL=https://your-project-ref.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+SUPABASE_JWT_SECRET=your-jwt-secret
+```
+
+Get your Supabase credentials from:
+- Project Settings → Database (for database credentials)
+- Project Settings → API (for service role key and JWT secret)
+
+## Database Migrations
+
+This project uses TypeORM migrations to manage database schema changes.
+
+### Generate a New Migration
+
+Compares your TypeORM entities with the current database schema and creates a migration file:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run migration:generate -- src/modules/database/infra/repositories/migrations/MigrationName
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Example:
+```bash
+npm run migration:generate -- src/modules/database/infra/repositories/migrations/InitialSchema
+```
 
-## Resources
+### Run Migrations
 
-Check out a few resources that may come in handy when working with NestJS:
+Apply pending migrations to your database:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+npm run migration:run
+```
 
-## Support
+### Revert Last Migration
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Rollback the most recent migration:
 
-## Stay in touch
+```bash
+npm run migration:revert
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### View Migration Status
+
+See which migrations have been applied:
+
+```bash
+npm run migration:show
+```
+
+## Running the Application
+
+```bash
+# Development mode with hot-reload
+npm run start:dev
+
+# Standard start
+npm run start
+
+# Production mode (requires build first)
+npm run start:prod
+
+# Build the application
+npm run build
+```
+
+The API will be available at `http://localhost:3000` (or the port specified in your `.env` file).
+
+## API Documentation
+
+Interactive Swagger documentation is available at:
+```
+http://localhost:3000/api/docs
+```
+
+## Testing
+
+```bash
+# Unit tests
+npm run test
+
+# Unit tests in watch mode
+npm run test:watch
+
+# Test coverage report
+npm run test:cov
+
+# End-to-end tests
+npm run test:e2e
+
+# Tests with debugger
+npm run test:debug
+```
+
+## Code Quality
+
+```bash
+# Run ESLint and auto-fix issues
+npm run lint
+
+# Format code with Prettier
+npm run format
+```
+
+## Project Structure
+
+```
+src/
+├── base/                      # Shared base classes and utilities
+├── config/                    # Configuration files
+│   └── db/                   # Database configuration
+├── modules/                   # Feature modules
+│   ├── auth/                 # Authentication (Supabase + JWT)
+│   ├── user/                 # User management
+│   ├── team/                 # Team management
+│   ├── transaction/          # Transaction handling
+│   ├── split/                # Expense splitting
+│   ├── contact/              # Contact management
+│   ├── property/             # Property tracking
+│   └── ...                   # Other modules
+└── main.ts                   # Application entry point
+```
+
+Each module follows a domain-driven hexagonal architecture:
+- `domain/` - Business logic and value objects
+- `application/` - Services and DTOs
+- `infra/` - Infrastructure (repositories, API controllers)
+
+## Technology Stack
+
+- **Framework**: NestJS 11
+- **Language**: TypeScript 5.7
+- **ORM**: TypeORM 0.3
+- **Database**: PostgreSQL (Supabase)
+- **Authentication**: Supabase + Passport JWT
+- **Validation**: Zod
+- **Documentation**: Swagger/OpenAPI
+- **Testing**: Jest
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+MIT
