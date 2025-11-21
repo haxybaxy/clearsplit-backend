@@ -6,7 +6,9 @@ import {
 } from '@nestjs/common';
 import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { DataSource } from 'typeorm';
 import { UserService } from '@modules/user/user.service';
+import { TeamService } from '@modules/team/team.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
@@ -16,7 +18,11 @@ import { envConfig } from '@config/env.config';
 export class AuthService {
   private supabase: SupabaseClient;
 
-  constructor(private readonly userService: UserService) {
+  constructor(
+    private readonly userService: UserService,
+    private readonly teamService: TeamService,
+    private readonly dataSource: DataSource,
+  ) {
     const supabaseUrl: string = envConfig.get('SUPABASE_URL');
     const supabaseKey: string = envConfig.get('SUPABASE_ANON_KEY');
 
@@ -31,7 +37,8 @@ export class AuthService {
   }
 
   async signup(signupDto: SignupDto): Promise<AuthResponseDto> {
-    const { email, password, firstName, lastName } = signupDto;
+    const { email, password, firstName, lastName, defaultCurrencyId } =
+      signupDto;
 
     // Check if user already exists in our database
     const existingUser = await this.userService.findByEmail(email);
@@ -58,14 +65,33 @@ export class AuthService {
       );
     }
 
-    // Sync user to our database
+    // Create user and personal team in a transaction
     try {
-      const dbUser = await this.userService.create({
-        email,
-        firstName,
-        lastName,
-        supabaseId: authData.user.id,
-      });
+      const dbUser = await this.dataSource.transaction(
+        async (entityManager) => {
+          // Create user in database
+          const user = await this.userService.create(
+            {
+              email,
+              firstName,
+              lastName,
+              supabaseId: authData.user.id,
+            },
+            entityManager,
+          );
+
+          // Create personal team with the user as owner
+          const personalTeamName = `${firstName}'s Team`;
+          await this.teamService.createTeamWithOwner(
+            user.id,
+            personalTeamName,
+            defaultCurrencyId,
+            entityManager,
+          );
+
+          return user;
+        },
+      );
 
       return {
         accessToken: authData.session.access_token,
@@ -80,8 +106,9 @@ export class AuthService {
       };
     } catch (error) {
       console.log(error);
+      // TODO: Consider rolling back Supabase user creation if database operations fail
       throw new InternalServerErrorException(
-        'Failed to sync user to database after Supabase signup',
+        'Failed to create user and team in database after Supabase signup',
       );
     }
   }

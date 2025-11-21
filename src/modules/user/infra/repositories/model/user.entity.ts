@@ -31,5 +31,5 @@ export class DBUser extends DatabaseEntity {
   contact: DBContact;
 
   @OneToOne(() => DBTeam, (owner) => owner.user)
-  owner: DBContact;
+  owner: DBTeam;
 }

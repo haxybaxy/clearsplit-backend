@@ -5,11 +5,13 @@ import { AuthService } from './application/auth.service';
 import { AuthController } from './controllers/auth.controller';
 import { JwtStrategy } from './infra/api/strategy/jwt.strategy';
 import { UserModule } from '@modules/user/user.module';
+import { TeamModule } from '@modules/team/team.module';
 import { envConfig } from '@config/env.config';
 
 @Module({
   imports: [
     UserModule,
+    TeamModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: envConfig.get('SUPABASE_JWT_SECRET'),
