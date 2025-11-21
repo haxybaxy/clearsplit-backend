@@ -39,6 +39,7 @@ import {
   ApiConflictResponseCustom,
   ApiInternalServerErrorResponseCustom,
 } from '@src/common/decorators/api-responses.decorator';
+import type { AuthenticatedRequest } from '@modules/auth/infra/api/types/authenticated-request.interface';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -131,13 +132,13 @@ export class AuthController {
   })
   @ApiUnauthorizedResponseCustom()
   @ApiInternalServerErrorResponseCustom()
-  async getCurrentUser(@Request() req) {
+  getCurrentUser(@Request() req: AuthenticatedRequest): UserResponseDto {
     return {
       id: req.user.id,
       email: req.user.email,
       firstName: req.user.firstName,
       lastName: req.user.lastName,
-      avatarUrl: req.user.avatarUrl,
+      avatarUrl: req.user.avatarUrl ?? undefined,
     };
   }
 }
