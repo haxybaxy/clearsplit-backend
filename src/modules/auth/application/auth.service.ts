@@ -9,6 +9,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { DataSource } from 'typeorm';
 import { UserService } from '@modules/user/user.service';
 import { TeamService } from '@modules/team/team.service';
+import { DBUser } from '@modules/user/infra/repositories/model/user.entity';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
@@ -97,13 +98,13 @@ export class AuthService {
     try {
       const dbUser = await this.dataSource.transaction(
         async (entityManager) => {
-          // Create user in database
+          // Create user in database using Supabase ID as primary key
           const user = await this.userService.create(
             {
+              id: authData.user.id,
               email,
               firstName,
               lastName,
-              supabaseId: authData.user.id,
             },
             entityManager,
           );
@@ -172,8 +173,13 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    // Find user in our database
-    const dbUser = await this.userService.findBySupabaseId(authData.user.id);
+    // Find user in our database (user.id = Supabase auth ID)
+    let dbUser: DBUser | null = null;
+    try {
+      dbUser = await this.userService.findById(authData.user.id);
+    } catch {
+      dbUser = null;
+    }
 
     if (!dbUser) {
       // User exists in Supabase but not in our DB - this shouldn't happen
@@ -207,8 +213,13 @@ export class AuthService {
     };
   }
 
-  async validateUser(supabaseId: string) {
-    const user = await this.userService.findBySupabaseId(supabaseId);
+  async validateUser(userId: string): Promise<DBUser> {
+    let user: DBUser | null = null;
+    try {
+      user = await this.userService.findById(userId);
+    } catch {
+      user = null;
+    }
     if (!user) {
       throw new UnauthorizedException('User not found');
     }

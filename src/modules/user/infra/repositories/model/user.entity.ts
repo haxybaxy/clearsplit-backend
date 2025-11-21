@@ -20,9 +20,6 @@ export class DBUser extends DatabaseEntity {
   @Column({ nullable: true })
   avatarUrl: string;
 
-  @Column({ nullable: true, unique: true })
-  supabaseId: string;
-
   @OneToMany(() => DBTeamMember, (teamMembership) => teamMembership.user)
   @JoinColumn({ name: 'id', referencedColumnName: 'userId' })
   teamMembership: DBTeamMember[];

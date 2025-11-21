@@ -168,9 +168,24 @@ export class CurrencyCodeAsPrimaryKey1763744400000
     await queryRunner.query(
       `ALTER TABLE "allocation" ADD CONSTRAINT "FK_allocation_currencyId_currency" FOREIGN KEY ("currencyId") REFERENCES "currency"("code") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
+
+    // Step 10: Drop supabaseId column from user table (id is now the Supabase ID)
+    await queryRunner.query(
+      `ALTER TABLE "user" DROP CONSTRAINT IF EXISTS "UQ_dc3242bf714f738cf0d659c69e9"`,
+    );
+    await queryRunner.query(`ALTER TABLE "user" DROP COLUMN "supabaseId"`);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    // Step 0: Restore supabaseId column
+    await queryRunner.query(
+      `ALTER TABLE "user" ADD "supabaseId" character varying`,
+    );
+    await queryRunner.query(`UPDATE "user" SET "supabaseId" = "id"`);
+    await queryRunner.query(
+      `ALTER TABLE "user" ADD CONSTRAINT "UQ_dc3242bf714f738cf0d659c69e9" UNIQUE ("supabaseId")`,
+    );
+
     // Step 1: Drop foreign key constraints
     await queryRunner.query(
       `ALTER TABLE "allocation" DROP CONSTRAINT "FK_allocation_currencyId_currency"`,
