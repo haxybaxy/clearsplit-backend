@@ -24,11 +24,11 @@ export class AuthService {
     private readonly dataSource: DataSource,
   ) {
     const supabaseUrl: string = envConfig.get('SUPABASE_URL');
-    const supabaseKey: string = envConfig.get('SUPABASE_ANON_KEY');
+    const supabaseKey: string = envConfig.get('SUPABASE_SERVICE_ROLE_KEY');
 
     if (!supabaseUrl || !supabaseKey) {
       throw new Error(
-        'Supabase configuration is missing. Please set SUPABASE_URL and SUPABASE_ANON_KEY in your environment variables.',
+        'Supabase configuration is missing. Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in your environment variables.',
       );
     }
 

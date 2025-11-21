@@ -114,7 +114,7 @@ The application uses a hybrid authentication approach:
 ```env
 # Supabase Configuration
 SUPABASE_URL=your-project-url
-SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 SUPABASE_JWT_SECRET=your-jwt-secret
 
 # Database Configuration
@@ -128,6 +128,8 @@ DATABASE_LOGGING_ENABLED=false
 # Application
 NODE_ENV=development
 ```
+
+**Note**: This backend uses the Supabase service role key (not anon key) since it's a private API without Row Level Security policies. The service role key provides admin privileges and should never be exposed to clients or committed to version control.
 
 ### Protecting Routes
 
