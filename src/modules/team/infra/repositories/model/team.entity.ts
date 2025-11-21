@@ -29,11 +29,11 @@ export class DBTeam extends DatabaseEntity {
   @JoinColumn({ name: 'ownerId', referencedColumnName: 'id' })
   user: DBUser;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, default: 'EUR' })
   defaultCurrencyId: string;
 
   @ManyToOne(() => DBCurrency, (currency) => currency.teams)
-  @JoinColumn({ name: 'defaultCurrencyId', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'defaultCurrencyId', referencedColumnName: 'code' })
   currency: DBCurrency;
 
   @OneToMany(() => DBProperty, (property) => property.team)

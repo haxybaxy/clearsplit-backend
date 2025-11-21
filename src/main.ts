@@ -5,6 +5,15 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // CORS Configuration
+  app.enableCors({
+    origin: 'http://localhost:8080',
+    credentials: true,
+  });
+
+  // Global API prefix
+  app.setGlobalPrefix('api');
+
   // Swagger/OpenAPI Configuration
   const config = new DocumentBuilder()
     .setTitle('ClearSplit API')

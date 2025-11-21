@@ -33,11 +33,4 @@ export class SignupClassDto {
     minLength: 1,
   })
   lastName: string;
-
-  @ApiProperty({
-    description: 'Default currency ID for the personal team (UUID format)',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-    format: 'uuid',
-  })
-  defaultCurrencyId: string;
 }

@@ -32,8 +32,11 @@ export class DBTransactionComponent extends DatabaseEntity {
   @Column({ nullable: true })
   finalCurrencyId?: string;
 
-  @ManyToOne(() => DBCurrency, (currency) => currency.finalCurrencyTransactions)
-  @JoinColumn({ name: 'finalCurrencyId', referencedColumnName: 'id' })
+  @ManyToOne(
+    () => DBCurrency,
+    (currency) => currency.finalCurrencyTransactionComponents,
+  )
+  @JoinColumn({ name: 'finalCurrencyId', referencedColumnName: 'code' })
   finalCurrency: DBCurrency;
 
   @Column({ nullable: true })
@@ -41,8 +44,8 @@ export class DBTransactionComponent extends DatabaseEntity {
 
   @ManyToOne(
     () => DBCurrency,
-    (currency) => currency.originalCurrencyTransactions,
+    (currency) => currency.originalCurrencyTransactionComponents,
   )
-  @JoinColumn({ name: 'originalCurrencyId', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'originalCurrencyId', referencedColumnName: 'code' })
   originalCurrency: DBCurrency;
 }

@@ -37,6 +37,6 @@ export class DBAllocation extends DatabaseEntity {
   currencyId?: string;
 
   @ManyToOne(() => DBCurrency, (currency) => currency.allocations)
-  @JoinColumn({ name: 'currencyId', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'currencyId', referencedColumnName: 'code' })
   currency?: DBCurrency;
 }
