@@ -114,7 +114,7 @@ The application uses a hybrid authentication approach:
 ```env
 # Supabase Configuration
 SUPABASE_URL=your-project-url
-SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 SUPABASE_JWT_SECRET=your-jwt-secret
 
 # Database Configuration
@@ -128,6 +128,8 @@ DATABASE_LOGGING_ENABLED=false
 # Application
 NODE_ENV=development
 ```
+
+**Note**: This backend uses the Supabase service role key (not anon key) since it's a private API without Row Level Security policies. The service role key provides admin privileges and should never be exposed to clients or committed to version control.
 
 ### Protecting Routes
 
@@ -242,11 +244,269 @@ Services are injected via constructor. When a service needs database access:
 1. Import `TypeOrmModule.forFeature([DBEntity])` in module
 2. Inject repository with `@InjectRepository(DBEntity)`
 
+## Swagger/OpenAPI Documentation
+
+### Overview
+
+The API is fully documented with **Swagger/OpenAPI** specification. Interactive documentation is available at:
+- **URL**: http://localhost:3000/api/docs
+- **Configuration**: `src/main.ts`
+
+### Dual DTO Strategy
+
+**CRITICAL**: This project uses a dual DTO approach for validation and documentation:
+
+1. **Zod Schemas** (for runtime validation):
+   - Located in: `src/modules/<module>/application/dto/*.dto.ts`
+   - Format: `ExampleDtoSchema` (Zod schema) + `ExampleDto` (inferred type)
+   - Used for: Runtime validation in controllers/services
+   - Example:
+   ```typescript
+   import { z } from 'zod';
+
+   export const CreateUserDtoSchema = z.object({
+     email: z.string().email('Invalid email'),
+     name: z.string().min(1, 'Name required'),
+   });
+
+   export type CreateUserDto = z.infer<typeof CreateUserDtoSchema>;
+   ```
+
+2. **Class DTOs** (for Swagger documentation):
+   - Located in: `src/modules/<module>/application/dto/*.class.dto.ts`
+   - Format: `ExampleClassDto` (class with `@ApiProperty` decorators)
+   - Used for: Swagger schema generation and documentation
+   - Example:
+   ```typescript
+   import { ApiProperty } from '@nestjs/swagger';
+
+   export class CreateUserClassDto {
+     @ApiProperty({
+       description: 'User email address',
+       example: 'john@example.com',
+       format: 'email',
+     })
+     email: string;
+
+     @ApiProperty({
+       description: 'User full name',
+       example: 'John Doe',
+       minLength: 1,
+     })
+     name: string;
+   }
+   ```
+
+**Why Both?**: Zod provides superior runtime validation with detailed error messages, while Swagger requires class-based DTOs with decorators for metadata generation.
+
+### Controller Documentation Standards
+
+**MANDATORY**: All controllers must be fully documented with Swagger decorators:
+
+```typescript
+import { Controller, Post, Get, Body, UseGuards, Request } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiBody,
+} from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiUnauthorizedResponseCustom,
+  ApiInternalServerErrorResponseCustom,
+} from '@src/common/decorators/api-responses.decorator';
+
+@ApiTags('ModuleName') // ← REQUIRED: Group endpoints by module
+@Controller('module')
+export class ExampleController {
+
+  @Post()
+  @ApiOperation({
+    summary: 'Short description (< 50 chars)',  // ← REQUIRED
+    description: 'Detailed explanation of what this endpoint does, ' +
+                 'including side effects and business logic.',  // ← REQUIRED
+  })
+  @ApiBody({ type: CreateExampleClassDto })  // ← REQUIRED for POST/PUT/PATCH
+  @ApiResponse({
+    status: 201,
+    description: 'Success case description',
+    type: ExampleResponseClassDto,  // ← REQUIRED: Response type
+  })
+  @ApiBadRequestResponse()  // ← REQUIRED
+  @ApiInternalServerErrorResponseCustom()  // ← REQUIRED
+  async create(@Body() body: unknown) {
+    // Validate with Zod
+    const dto = CreateExampleDtoSchema.parse(body);
+    // ...
+  }
+
+  @Get('protected')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')  // ← REQUIRED for protected routes
+  @ApiOperation({ summary: 'Get protected data' })
+  @ApiResponse({
+    status: 200,
+    description: 'Data retrieved successfully',
+    type: ExampleResponseClassDto,
+  })
+  @ApiUnauthorizedResponseCustom()  // ← REQUIRED for protected routes
+  async getProtected(@Request() req: AuthenticatedRequest) {
+    // ...
+  }
+}
+```
+
+### Available Response Decorators
+
+Located in `src/common/decorators/api-responses.decorator.ts`:
+
+- `@ApiBadRequestResponse()` - 400 Bad Request (validation errors)
+- `@ApiUnauthorizedResponseCustom()` - 401 Unauthorized (auth failed)
+- `@ApiNotFoundResponseCustom(resourceName)` - 404 Not Found
+- `@ApiConflictResponseCustom(message)` - 409 Conflict (duplicate resource)
+- `@ApiInternalServerErrorResponseCustom()` - 500 Internal Server Error
+- `@ApiCommonErrorResponses()` - Combines 400, 401, 500
+
+### Swagger Best Practices
+
+1. **@ApiOperation**: Always provide both `summary` (short) and `description` (detailed)
+2. **@ApiResponse**: Document ALL possible response status codes
+3. **@ApiBody**: Always specify for POST/PUT/PATCH endpoints
+4. **@ApiBearerAuth**: MUST be present on all protected routes (with `JwtAuthGuard`)
+5. **Examples**: Include realistic examples in `@ApiProperty` decorators
+6. **Response Types**: Always specify response DTO class, never use generic objects
+
+### Testing with Swagger UI
+
+1. Start server: `npm run start:dev`
+2. Open: http://localhost:3000/api/docs
+3. For protected endpoints:
+   - Click "Authorize" button (top right)
+   - Paste JWT token from `/auth/signup` or `/auth/login` response
+   - Click "Authorize" then "Close"
+   - Token will be included in all subsequent requests
+
+## Type Safety Requirements
+
+### Strict TypeScript Configuration
+
+This project enforces **strict type safety**:
+- `isolatedModules: true`
+- `emitDecoratorMetadata: true`
+- **NO `any` types allowed** (ESLint will fail)
+- **NO unsafe assignments** (ESLint will fail)
+
+### Type-Only Imports
+
+When importing types used in decorator signatures, **MUST** use `import type`:
+
+```typescript
+// ✅ CORRECT
+import type { AuthenticatedRequest } from '@modules/auth/infra/api/types/authenticated-request.interface';
+
+// ❌ WRONG - Will fail compilation
+import { AuthenticatedRequest } from '@modules/auth/infra/api/types/authenticated-request.interface';
+```
+
+**Why?**: TypeScript's `emitDecoratorMetadata` requires type-only imports to be explicitly marked to avoid runtime errors.
+
+### Authenticated Request Typing
+
+For protected routes, **ALWAYS** use the typed `AuthenticatedRequest` interface:
+
+```typescript
+import type { AuthenticatedRequest } from '@modules/auth/infra/api/types/authenticated-request.interface';
+
+@Get('me')
+@UseGuards(JwtAuthGuard)
+async getCurrentUser(@Request() req: AuthenticatedRequest): UserResponseDto {
+  // ✅ TypeScript knows req.user is DBUser
+  return {
+    id: req.user.id,           // ✅ Type: string
+    email: req.user.email,     // ✅ Type: string
+    avatarUrl: req.user.avatarUrl ?? undefined,  // ✅ Handle null properly
+  };
+}
+```
+
+**NEVER** use `@Request() req` without type annotation - it defaults to `any` and will fail ESLint.
+
+### Null/Undefined Handling
+
+**CRITICAL**: Use proper null handling operators:
+
+```typescript
+// ✅ CORRECT - Nullish coalescing
+const avatar = user.avatarUrl ?? 'default-avatar.png';
+
+// ✅ CORRECT - Optional chaining
+const teamName = user.team?.name;
+
+// ❌ WRONG - Can cause runtime errors
+const avatar = user.avatarUrl || 'default-avatar.png';  // 0 or '' would trigger fallback
+```
+
+### Service Method Signatures
+
+All service methods **MUST** have explicit return types:
+
+```typescript
+// ✅ CORRECT
+async createTeam(userId: string, name: string): Promise<DBTeam> {
+  // ...
+}
+
+// ❌ WRONG - Implicit return type
+async createTeam(userId: string, name: string) {
+  // ...
+}
+```
+
+### Controller Method Signatures
+
+Controller methods should specify return types for documentation clarity:
+
+```typescript
+// ✅ BEST - Explicit return type matching response DTO
+@Get('user')
+async getUser(@Param('id') id: string): Promise<UserResponseDto> {
+  return this.userService.findById(id);
+}
+
+// ✅ ACCEPTABLE - Promise<T> for complex returns
+async createUser(@Body() dto: CreateUserDto): Promise<AuthResponseDto> {
+  return this.authService.signup(dto);
+}
+```
+
+### EntityManager Transaction Typing
+
+When adding transaction support to methods, use optional `EntityManager`:
+
+```typescript
+async create(
+  dto: CreateDto,
+  entityManager?: EntityManager,  // ← Optional for transaction support
+): Promise<Entity> {
+  const repo = entityManager
+    ? entityManager.getRepository(Entity)
+    : this.repository;
+
+  return repo.save(repo.create(dto));
+}
+```
+
+This allows the method to work both standalone and within transactions.
+
 ## Important Notes
 
 - **Port**: Application runs on port 3000 by default (see `main.ts`)
+- **API Documentation**: Available at http://localhost:3000/api/docs
 - **CORS**: Not configured by default - add `app.enableCors()` in `main.ts` if needed
 - **Node version**: >= 20.0.0 required
 - **NPM version**: >= 10.0.0 required
 - **Hot reload**: Available in development mode with `npm run start:dev`
 - **Migrations**: Must be run manually - `synchronize` is disabled in production
+- **Type Safety**: ESLint will fail on `any` types, unsafe assignments, or missing type annotations

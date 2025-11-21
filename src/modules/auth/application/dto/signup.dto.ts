@@ -5,7 +5,6 @@ export const SignupDtoSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
-  defaultCurrencyId: z.string().uuid('Invalid currency ID format'),
 });
 
 export type SignupDto = z.infer<typeof SignupDtoSchema>;

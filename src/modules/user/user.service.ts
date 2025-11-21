@@ -4,10 +4,10 @@ import { Repository, EntityManager } from 'typeorm';
 import { DBUser } from './infra/repositories/model/user.entity';
 
 export interface CreateUserDto {
+  id: string;
   email: string;
   firstName: string;
   lastName: string;
-  supabaseId: string;
   avatarUrl?: string;
 }
 
@@ -32,10 +32,6 @@ export class UserService {
 
   async findByEmail(email: string): Promise<DBUser | null> {
     return await this.userRepository.findOne({ where: { email } });
-  }
-
-  async findBySupabaseId(supabaseId: string): Promise<DBUser | null> {
-    return await this.userRepository.findOne({ where: { supabaseId } });
   }
 
   async findById(id: string): Promise<DBUser> {

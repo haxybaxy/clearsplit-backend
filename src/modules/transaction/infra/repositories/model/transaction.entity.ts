@@ -5,6 +5,7 @@ import { TransactionType } from '@modules/transaction/domain/transaction-type.va
 import { DBCurrency } from '@modules/currency/infra/repositories/model/currency.entity';
 import { DBContact } from '@modules/contact/infra/repositories/model/contact.entity';
 import { DBTransactionComponent } from './transaction-component.entity';
+import { DBTransactionCategory } from './transaction-category.entity';
 
 export const TRANSACTION_TABLE_NAME = 'transaction';
 
@@ -14,7 +15,11 @@ export class DBTransaction extends DatabaseEntity {
   description: string;
 
   @Column({ nullable: true })
-  category: string;
+  categoryId: string;
+
+  @ManyToOne(() => DBTransactionCategory, (category) => category.transactions)
+  @JoinColumn({ name: 'categoryId', referencedColumnName: 'id' })
+  category: DBTransactionCategory;
 
   @Column({
     type: 'enum',
@@ -22,6 +27,8 @@ export class DBTransaction extends DatabaseEntity {
     nullable: false,
     default: TransactionType.Income,
   })
+  type: string;
+
   @Column({ nullable: false })
   finalAmount: number;
 
@@ -32,7 +39,7 @@ export class DBTransaction extends DatabaseEntity {
   finalCurrencyId: string;
 
   @ManyToOne(() => DBCurrency, (currency) => currency.finalCurrencyTransactions)
-  @JoinColumn({ name: 'finalCurrencyId', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'finalCurrencyId', referencedColumnName: 'code' })
   finalCurrency: DBCurrency;
 
   @Column({ nullable: false })
@@ -42,7 +49,7 @@ export class DBTransaction extends DatabaseEntity {
     () => DBCurrency,
     (currency) => currency.originalCurrencyTransactions,
   )
-  @JoinColumn({ name: 'originalCurrencyId', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'originalCurrencyId', referencedColumnName: 'code' })
   originalCurrency: DBCurrency;
 
   @OneToMany(

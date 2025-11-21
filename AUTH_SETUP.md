@@ -14,7 +14,7 @@ Update your `.env` file with your Supabase credentials:
 
 ```env
 SUPABASE_URL=your-supabase-project-url
-SUPABASE_ANON_KEY=your-supabase-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
 SUPABASE_JWT_SECRET=your-supabase-jwt-secret
 ```
 
@@ -23,8 +23,10 @@ SUPABASE_JWT_SECRET=your-supabase-jwt-secret
 2. Navigate to Settings > API
 3. Copy:
    - Project URL → `SUPABASE_URL`
-   - anon/public key → `SUPABASE_ANON_KEY`
+   - service_role key → `SUPABASE_SERVICE_ROLE_KEY` (⚠️ Keep this secret!)
    - JWT Secret → `SUPABASE_JWT_SECRET`
+
+**⚠️ Security Warning**: The service role key bypasses Row Level Security and has full admin privileges. Never commit this key to version control or expose it to client-side code. This key should only be used in trusted server environments.
 
 ### 2. Database Migration
 The User entity has been updated with a `supabaseId` field. Run migrations:
