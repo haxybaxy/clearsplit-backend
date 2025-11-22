@@ -4,12 +4,7 @@ import { Repository, EntityManager } from 'typeorm';
 import { DBTeamMember } from './model/team-member.entity';
 import { TeamMemberRole } from '@modules/team/domain/team-member-role.value-object';
 import { v4 as uuidv4 } from 'uuid';
-
-export interface CreateTeamMemberData {
-  teamId: string;
-  userId: string;
-  role: TeamMemberRole;
-}
+import type { CreateTeamMemberDto } from '@modules/team/application/dto/create-team-member.dto';
 
 @Injectable()
 export class TeamMemberRepository {
@@ -19,7 +14,7 @@ export class TeamMemberRepository {
   ) {}
 
   async create(
-    data: CreateTeamMemberData,
+    data: CreateTeamMemberDto,
     entityManager?: EntityManager,
   ): Promise<DBTeamMember> {
     const repo = entityManager

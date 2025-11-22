@@ -2,14 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, EntityManager } from 'typeorm';
 import { DBUser } from './model/user.entity';
-
-export interface CreateUserData {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  avatarUrl?: string;
-}
+import type { CreateUserDto } from '@modules/user/application/dto/create-user.dto';
 
 @Injectable()
 export class UserRepository {
@@ -19,7 +12,7 @@ export class UserRepository {
   ) {}
 
   async create(
-    data: CreateUserData,
+    data: CreateUserDto,
     entityManager?: EntityManager,
   ): Promise<DBUser> {
     const repo = entityManager

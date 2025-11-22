@@ -3,12 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, EntityManager } from 'typeorm';
 import { DBTeam } from './model/team.entity';
 import { v4 as uuidv4 } from 'uuid';
-
-export interface CreateTeamData {
-  name: string;
-  ownerId: string;
-  defaultCurrencyId: string;
-}
+import type { CreateTeamDto } from '@modules/team/application/dto/create-team.dto';
 
 @Injectable()
 export class TeamRepository {
@@ -18,7 +13,7 @@ export class TeamRepository {
   ) {}
 
   async create(
-    data: CreateTeamData,
+    data: CreateTeamDto,
     entityManager?: EntityManager,
   ): Promise<DBTeam> {
     const repo = entityManager

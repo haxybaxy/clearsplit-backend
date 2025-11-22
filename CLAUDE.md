@@ -9,6 +9,7 @@ This is a **ClearSplit** backend application built with NestJS, TypeScript, and 
 ## Development Commands
 
 ### Running the Application
+
 ```bash
 npm run start:dev      # Development mode with hot-reload
 npm run start          # Standard start
@@ -17,6 +18,7 @@ npm run build          # Build the application
 ```
 
 ### Testing
+
 ```bash
 npm run test           # Run unit tests
 npm run test:watch     # Run tests in watch mode
@@ -26,6 +28,7 @@ npm run test:debug     # Run tests with debugger attached
 ```
 
 ### Code Quality
+
 ```bash
 npm run lint           # Run ESLint and auto-fix issues
 npm run format         # Format code with Prettier
@@ -140,7 +143,7 @@ import { Controller, Get, UseGuards, Request } from '@nestjs/common';
 import { JwtAuthGuard } from '@modules/auth/infra/api/guard/jwt-auth.guard';
 
 @Controller('example')
-@UseGuards(JwtAuthGuard)  // Protect entire controller
+@UseGuards(JwtAuthGuard) // Protect entire controller
 export class ExampleController {
   @Get()
   async getData(@Request() req) {
@@ -170,11 +173,13 @@ See `PROTECTED_ROUTE_EXAMPLE.md` for detailed examples.
 ### Creating Entities
 
 All entities must:
+
 1. Extend `DatabaseEntity` from `@base/infra/repositories/entities/typeorm/database.entity`
 2. Use the `@Entity()` decorator with a table name constant
 3. Be placed in `src/modules/<module>/infra/repositories/model/*.entity.ts`
 
 Example:
+
 ```typescript
 import { DatabaseEntity } from '@base/infra/repositories/entities/typeorm/database.entity';
 import { Column, Entity } from 'typeorm';
@@ -203,7 +208,7 @@ import { z } from 'zod';
 
 export const CreateExampleDtoSchema = z.object({
   name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Invalid email format'),
+  email: z.email('Invalid email format'),
   age: z.number().min(0).optional(),
 });
 
@@ -241,6 +246,7 @@ Use TypeORM decorators (`@OneToMany`, `@ManyToOne`, `@OneToOne`, `@ManyToMany`) 
 ### Service Dependencies
 
 Services are injected via constructor. When a service needs database access:
+
 1. Import `TypeOrmModule.forFeature([DBEntity])` in module
 2. Inject repository with `@InjectRepository(DBEntity)`
 
@@ -249,6 +255,7 @@ Services are injected via constructor. When a service needs database access:
 ### Overview
 
 The API is fully documented with **Swagger/OpenAPI** specification. Interactive documentation is available at:
+
 - **URL**: http://localhost:3000/api/docs
 - **Configuration**: `src/main.ts`
 
@@ -257,10 +264,12 @@ The API is fully documented with **Swagger/OpenAPI** specification. Interactive 
 **CRITICAL**: This project uses a dual DTO approach for validation and documentation:
 
 1. **Zod Schemas** (for runtime validation):
+
    - Located in: `src/modules/<module>/application/dto/*.dto.ts`
    - Format: `ExampleDtoSchema` (Zod schema) + `ExampleDto` (inferred type)
    - Used for: Runtime validation in controllers/services
    - Example:
+
    ```typescript
    import { z } from 'zod';
 
@@ -273,10 +282,12 @@ The API is fully documented with **Swagger/OpenAPI** specification. Interactive 
    ```
 
 2. **Class DTOs** (for Swagger documentation):
+
    - Located in: `src/modules/<module>/application/dto/*.class.dto.ts`
    - Format: `ExampleClassDto` (class with `@ApiProperty` decorators)
    - Used for: Swagger schema generation and documentation
    - Example:
+
    ```typescript
    import { ApiProperty } from '@nestjs/swagger';
 
@@ -304,7 +315,14 @@ The API is fully documented with **Swagger/OpenAPI** specification. Interactive 
 **MANDATORY**: All controllers must be fully documented with Swagger decorators:
 
 ```typescript
-import { Controller, Post, Get, Body, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -321,21 +339,21 @@ import {
 @ApiTags('ModuleName') // ← REQUIRED: Group endpoints by module
 @Controller('module')
 export class ExampleController {
-
   @Post()
   @ApiOperation({
-    summary: 'Short description (< 50 chars)',  // ← REQUIRED
-    description: 'Detailed explanation of what this endpoint does, ' +
-                 'including side effects and business logic.',  // ← REQUIRED
+    summary: 'Short description (< 50 chars)', // ← REQUIRED
+    description:
+      'Detailed explanation of what this endpoint does, ' +
+      'including side effects and business logic.', // ← REQUIRED
   })
-  @ApiBody({ type: CreateExampleClassDto })  // ← REQUIRED for POST/PUT/PATCH
+  @ApiBody({ type: CreateExampleClassDto }) // ← REQUIRED for POST/PUT/PATCH
   @ApiResponse({
     status: 201,
     description: 'Success case description',
-    type: ExampleResponseClassDto,  // ← REQUIRED: Response type
+    type: ExampleResponseClassDto, // ← REQUIRED: Response type
   })
-  @ApiBadRequestResponse()  // ← REQUIRED
-  @ApiInternalServerErrorResponseCustom()  // ← REQUIRED
+  @ApiBadRequestResponse() // ← REQUIRED
+  @ApiInternalServerErrorResponseCustom() // ← REQUIRED
   async create(@Body() body: unknown) {
     // Validate with Zod
     const dto = CreateExampleDtoSchema.parse(body);
@@ -344,14 +362,14 @@ export class ExampleController {
 
   @Get('protected')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('JWT-auth')  // ← REQUIRED for protected routes
+  @ApiBearerAuth('JWT-auth') // ← REQUIRED for protected routes
   @ApiOperation({ summary: 'Get protected data' })
   @ApiResponse({
     status: 200,
     description: 'Data retrieved successfully',
     type: ExampleResponseClassDto,
   })
-  @ApiUnauthorizedResponseCustom()  // ← REQUIRED for protected routes
+  @ApiUnauthorizedResponseCustom() // ← REQUIRED for protected routes
   async getProtected(@Request() req: AuthenticatedRequest) {
     // ...
   }
@@ -393,6 +411,7 @@ Located in `src/common/decorators/api-responses.decorator.ts`:
 ### Strict TypeScript Configuration
 
 This project enforces **strict type safety**:
+
 - `isolatedModules: true`
 - `emitDecoratorMetadata: true`
 - **NO `any` types allowed** (ESLint will fail)
@@ -445,7 +464,7 @@ const avatar = user.avatarUrl ?? 'default-avatar.png';
 const teamName = user.team?.name;
 
 // ❌ WRONG - Can cause runtime errors
-const avatar = user.avatarUrl || 'default-avatar.png';  // 0 or '' would trigger fallback
+const avatar = user.avatarUrl || 'default-avatar.png'; // 0 or '' would trigger fallback
 ```
 
 ### Service Method Signatures

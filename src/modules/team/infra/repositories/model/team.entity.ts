@@ -11,6 +11,7 @@ import { DBUser } from '@modules/user/infra/repositories/model/user.entity';
 import { DBProperty } from '@modules/property/infra/repositories/model/property.entity';
 import { DBTeamMember } from './team-member.entity';
 import { DBCurrency } from '@modules/currency/infra/repositories/model/currency.entity';
+import { DBContact } from '@modules/contact/infra/repositories/model/contact.entity';
 
 export const TEAM_TABLE_NAME = 'team';
 
@@ -41,4 +42,7 @@ export class DBTeam extends DatabaseEntity {
 
   @OneToMany(() => DBTeamMember, (teamMember) => teamMember.team)
   members: DBTeamMember[];
+
+  @OneToMany(() => DBContact, (contact) => contact.team)
+  contacts: DBContact[];
 }

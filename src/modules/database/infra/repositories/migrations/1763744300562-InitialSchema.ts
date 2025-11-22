@@ -11,7 +11,7 @@ export class InitialSchema1763744300562 implements MigrationInterface {
       `CREATE TABLE "transaction_component" ("id" uuid NOT NULL, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "category" "public"."transaction_component_category_enum" NOT NULL DEFAULT 'rent', "finalAmount" integer NOT NULL, "originalAmount" integer NOT NULL, "transactionId" uuid NOT NULL, "finalCurrencyId" uuid, "originalCurrencyId" uuid, CONSTRAINT "PK_48557f590d65ca44621a73a4e80" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "contact" ("id" uuid NOT NULL, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "name" character varying NOT NULL, "email" character varying, "phone" character varying, "notes" character varying, "userId" uuid, CONSTRAINT "REL_6f027e4157ed480636a115228e" UNIQUE ("userId"), CONSTRAINT "PK_ad6d4f7655e718140c452dabc0b" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "contact" ("id" uuid NOT NULL, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "name" character varying NOT NULL, "email" character varying, "phone" character varying, "notes" character varying, "teamId" uuid NOT NULL, "userId" uuid, CONSTRAINT "REL_6f027e4157ed480636a115228e" UNIQUE ("userId"), CONSTRAINT "PK_ad6d4f7655e718140c452dabc0b" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "stakeholder" ("id" uuid NOT NULL, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "contactId" uuid NOT NULL, "propertyId" uuid NOT NULL, CONSTRAINT "PK_789fe9f27e810783e0adbc0bf71" PRIMARY KEY ("id"))`,
@@ -60,6 +60,9 @@ export class InitialSchema1763744300562 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE "contact" ADD CONSTRAINT "FK_6f027e4157ed480636a115228ea" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "contact" ADD CONSTRAINT "FK_contact_teamId" FOREIGN KEY ("teamId") REFERENCES "team"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
       `ALTER TABLE "stakeholder" ADD CONSTRAINT "FK_2a7a7fe9f7747337819170d82bd" FOREIGN KEY ("contactId") REFERENCES "contact"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
@@ -159,6 +162,9 @@ export class InitialSchema1763744300562 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE "stakeholder" DROP CONSTRAINT "FK_2a7a7fe9f7747337819170d82bd"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "contact" DROP CONSTRAINT "FK_contact_teamId"`,
     );
     await queryRunner.query(
       `ALTER TABLE "contact" DROP CONSTRAINT "FK_6f027e4157ed480636a115228ea"`,
