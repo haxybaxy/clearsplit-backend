@@ -4,7 +4,7 @@ import { DBTeam } from './infra/repositories/model/team.entity';
 import { DBTeamMember } from './infra/repositories/model/team-member.entity';
 import { TeamRepository } from './infra/repositories/team.repository';
 import { TeamMemberRepository } from './infra/repositories/team-member.repository';
-import { TeamService } from './team.service';
+import { TeamService } from './application/team.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([DBTeam, DBTeamMember])],
