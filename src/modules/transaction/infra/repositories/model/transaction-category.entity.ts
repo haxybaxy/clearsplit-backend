@@ -1,23 +1,25 @@
 import { DatabaseEntity } from '@base/infra/repositories/entities/typeorm/database.entity';
-import { TransactionCategoryType } from '@modules/transaction/domain/transaction-category-type.value-object';
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { DBTransaction } from './transaction.entity';
 import { DBTransactionComponent } from './transaction-component.entity';
+import { DBTeam } from '@modules/team/infra/repositories/model/team.entity';
 
 export const TRANSACTION_CATEGORY_TABLE_NAME = 'transaction_category';
 
 @Entity(TRANSACTION_CATEGORY_TABLE_NAME)
 export class DBTransactionCategory extends DatabaseEntity {
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   name: string;
 
-  @Column({
-    type: 'enum',
-    enum: TransactionCategoryType,
-    nullable: false,
-    default: TransactionCategoryType.Custom,
-  })
-  category: string;
+  @Column({ nullable: false, default: true })
+  custom: boolean;
+
+  @Column({ nullable: true })
+  teamId: string | null;
+
+  @ManyToOne(() => DBTeam, { nullable: true, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'teamId', referencedColumnName: 'id' })
+  team: DBTeam | null;
 
   @OneToMany(() => DBTransaction, (transaction) => transaction.category)
   transactions: DBTransaction[];
