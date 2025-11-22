@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
-import { DBTeam } from './infra/repositories/model/team.entity';
-import { TeamRepository } from './infra/repositories/team.repository';
-import { TeamMemberRepository } from './infra/repositories/team-member.repository';
-import { TeamMemberRole } from './domain/team-member-role.value-object';
+import { DBTeam } from '../infra/repositories/model/team.entity';
+import { TeamRepository } from '../infra/repositories/team.repository';
+import { TeamMemberRepository } from '../infra/repositories/team-member.repository';
+import { TeamMemberRole } from '../domain/team-member-role.value-object';
 
 @Injectable()
 export class TeamService {

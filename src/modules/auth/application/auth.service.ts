@@ -8,7 +8,7 @@ import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { DataSource } from 'typeorm';
 import { UserService } from '@modules/user/application/user.service';
-import { TeamService } from '@modules/team/team.service';
+import { TeamService } from '@modules/team/application/team.service';
 import { DBUser } from '@modules/user/infra/repositories/model/user.entity';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
@@ -94,7 +94,8 @@ export class AuthService {
       this.context,
     );
 
-    // Create user and personal team in a transaction
+    const supabaseUserId = authData.user.id;
+
     try {
       const dbUser = await this.dataSource.transaction(
         async (entityManager) => {
@@ -109,7 +110,6 @@ export class AuthService {
             entityManager,
           );
 
-          // Create personal team with the user as owner
           const personalTeamName = `${firstName}'s Team`;
           await this.teamService.createTeamWithOwner(
             user.id,
@@ -145,7 +145,9 @@ export class AuthService {
         { error: error instanceof Error ? error.message : String(error) },
         this.context,
       );
-      // TODO: Consider rolling back Supabase user creation if database operations fail
+
+      await this.rollbackSupabaseUser(supabaseUserId, email);
+
       throw new InternalServerErrorException(
         'Failed to create user and team in database after Supabase signup',
       );
@@ -224,5 +226,53 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
     return user;
+  }
+
+  /**
+   * Rollback Supabase user creation when database operations fail.
+   * This is a compensating transaction to maintain consistency between
+   * Supabase Auth and our PostgreSQL database.
+   */
+  private async rollbackSupabaseUser(
+    supabaseUserId: string,
+    email: string,
+  ): Promise<void> {
+    try {
+      const { error: deleteError } =
+        await this.supabase.auth.admin.deleteUser(supabaseUserId);
+
+      if (deleteError) {
+        // Log the failure but don't throw - we don't want to mask the original error
+        this.logger.errorWithData(
+          `Failed to rollback Supabase user after DB failure`,
+          {
+            supabaseUserId,
+            email,
+            deleteError: deleteError.message,
+          },
+          this.context,
+        );
+      } else {
+        this.logger.info(
+          `Successfully rolled back Supabase user: ${supabaseUserId}`,
+          undefined,
+          this.context,
+        );
+      }
+    } catch (rollbackError) {
+      // Log but don't throw - preserve the original error context
+      this.logger.errorWithData(
+        `Exception during Supabase user rollback`,
+        {
+          supabaseUserId,
+          email,
+          error:
+            rollbackError instanceof Error
+              ? rollbackError.message
+              : String(rollbackError),
+        },
+        this.context,
+      );
+    }
   }
 }
