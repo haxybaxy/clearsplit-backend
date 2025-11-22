@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, EntityManager } from 'typeorm';
-import { DBUser } from './infra/repositories/model/user.entity';
+import { DBUser } from '../infra/repositories/model/user.entity';
 
 export interface CreateUserDto {
   id: string;

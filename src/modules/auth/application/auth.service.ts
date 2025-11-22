@@ -7,7 +7,7 @@ import {
 import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { DataSource } from 'typeorm';
-import { UserService } from '@modules/user/user.service';
+import { UserService } from '@modules/user/application/user.service';
 import { TeamService } from '@modules/team/team.service';
 import { DBUser } from '@modules/user/infra/repositories/model/user.entity';
 import { SignupDto } from './dto/signup.dto';
